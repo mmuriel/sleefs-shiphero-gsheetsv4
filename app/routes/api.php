@@ -16,3 +16,17 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::post('/sh', function (Request $request) {
+    
+	$entityBody = file_get_contents('php://input');
+
+	//print_r(json_decode($entityBody));
+	$clogger = new \Sleefs\Helpers\CustomLogger("sleefs.log");
+	$clogger->writeToLog ($entityBody,"INFO");
+	return response()->json(["DATA" => json_decode($entityBody)]);
+	//return response($entityBody);
+
+
+});

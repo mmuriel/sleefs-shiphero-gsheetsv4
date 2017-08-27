@@ -11,16 +11,21 @@
 |
 */
 
+
 Route::get('/', function () {
     return view('welcome');
 });
 
 
-Route::get('/mm', function () {
-    return ("MMMMM");
+
+Route::get('/test',function(){
+
+	return ("");
 });
 
 
-Route::get('/mm/{num}', function ($num) {
-    return ("MMMMM".$num);
-});
+/*
+
+	Rutas para trabajar el API que no requieren tokens
+
+*/
