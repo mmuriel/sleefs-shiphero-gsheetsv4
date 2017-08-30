@@ -57,14 +57,31 @@ class GoogleSpreadSheetApiCommand extends Command
             new DefaultServiceRequest($accessToken)
         );
 
+        $spreadSheetService = new \Google\Spreadsheet\SpreadsheetService();
+        $ssfeed = $spreadSheetService->getSpreadsheetFeed();
+        //var_dump($ssfeed);
+        echo "\n=========\n\n";
+        foreach ($ssfeed->getEntries() as $spreadSheet){
+
+            echo "\n";
+            //var_dump($spreadSheet);
+
+        }
+
+        
+
         $spreadsheet = (new \Google\Spreadsheet\SpreadsheetService)
         ->getSpreadsheetFeed()
-        ->getByTitle('Sleefs - Shiphero - Google Spreadsheet');
- 
+        //->getByTitle('Sleefs - Shiphero - Google Spreadsheet');
+        //->getById('https://docs.google.com/spreadsheets/d/17IiATPBE1GAIxDW-3v4xSG3yr0QOhxr1bQCordZJqds/');
+        ->getById('17IiATPBE1GAIxDW-3v4xSG3yr0QOhxr1bQCordZJqds');
+        //var_dump($spreadsheet);
+        
         // Get the first worksheet (tab)
         $worksheets = $spreadsheet->getWorksheetFeed()->getEntries();
-        $worksheet = $worksheets[0];
-
+        print_r($worksheets);
+        $worksheet = $worksheets[1];
+        return false;
         $listFeed = $worksheet->getListFeed(); // Trae los registros con indice asociativo (nombre la columna)
         /** @var ListEntry */
         
