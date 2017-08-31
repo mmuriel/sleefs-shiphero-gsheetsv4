@@ -58,51 +58,81 @@ Class PurchaseOrderWebHookEndPointController extends Controller {
         $listFeed = $worksheet->getListFeed(); // Trae los registros con indice asociativo (nombre la columna)
         /** @var ListEntry */
         $alreadyAdded = false;
+
+        $itemsRegistered = array();
+
+
+        //Genera las actualizaciones
         foreach ($listFeed->getEntries() as $entry) {
            $record = $entry->getValues();
            if ($record['id'] == $po->purchase_order->po_id){
 
-           		$alreadyAdded = true;
+                foreach ($poextended->po->results->items as $po_item){
 
-           		/* Actualiza los registros */
-           		//$record'id' => $po->purchase_order->po_id,
-	            $record['ponumber'] = $poextended->po->results->po_number;
-	            $record['status'] = $po->purchase_order->status;
-	            $record['createddate'] = $poextended->po->results->created_at;
-	            $record['expecteddate'] = $poextended->po->results->po_date;
-	            $record['vendor'] = $poextended->po->results->vendor_name;
-	            $record['totalcost'] = $poextended->po->results->total_price;
-	            $entry->update($record);
-           		break;
+
+                    if ($record['sku'] == $po_item->sku){
+
+                   		/* Actualiza los registros */
+                   		//$record'id' => $po->purchase_order->po_id,
+        	            $record['ordered'] = $po_item->quantity; 
+                        $record['received'] = $po_item->quantity_received;
+                        $record['pending'] = $po_item->quantity - $po_item->quantity_received;
+                        $record['status'] = $po_item->fulfillment_status;
+                        $record['total'] = $poextended->po->results->total_price;
+        	            $entry->update($record);
+                        array_push($itemsRegistered,$po_item->sku);
+                        break;
+
+                    }
+
+                }
            }
         }
+
+        //Genera los nuevos registros
+        foreach ($poextended->po->results->items as $po_item){
+
+            $alreadyAdded = false;
+            foreach($itemsRegistered as $itemRegistered){
+
+                if ($po_item->sku == $itemRegistered){
+                    $alreadyAdded = true;
+                    break;
+                }
+            }
+
+            if (!$alreadyAdded){
+
+            $listFeed->insert([
+
+                'id' => $po->purchase_order->po_id,
+                'po' => $poextended->po->results->po_number,
+                'sku' => $po_item->sku,
+                'status' => $po_item->fulfillment_status,
+                'ordered' => $po_item->quantity,
+                'received' => $po_item->quantity_received,
+                'pending' => $po_item->quantity - $po_item->quantity_received,
+                'total' => $poextended->po->results->total_price,
+
+                ]);
+
+            }
+
+        }
+
         //$cellFeed = $worksheet->getCellFeed(); // Indices númericos
         //$arrCellFeed = $cellFeed->toArray();
         //print_r($arrCellFeed);
     
-    	if (!$alreadyAdded){
-
-    		$listFeed->insert([
-
-            'id' => $po->purchase_order->po_id,
-            'ponumber' => $poextended->po->results->po_number,
-            'status' => $po->purchase_order->status,
-            'createddate' => $poextended->po->results->created_at,
-            'expecteddate' => $poextended->po->results->po_date,
-            'vendor' => $poextended->po->results->vendor_name,
-            'totalcost' => $poextended->po->results->total_price,
-
-        	]);
-
-    	}
+    	
         
 
         //return response($spreadsheet->);
 
 
 
-		//return response($entityBody);
-		return response()->json(["code"=>200,"Message" => "Success"]);
+		return response()->json($po);
+		//return response()->json(["code"=>200,"Message" => "Success"]);
 
 
 
