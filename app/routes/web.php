@@ -20,12 +20,19 @@ Route::get('/', function () {
 
 Route::get('/test',function(){
 
-	return ("tes");
+	return ('Hola error...');
 });
 
 
 /*
 
-	Rutas para trabajar el API que no requieren tokens
+	Rutas para Test con Phpunit
 
 */
+
+Route::post('/tests/curl',function(Request $req){
+
+	$payload = json_decode(file_get_contents('php://input'));
+	return "Hola Mundo Post";
+
+});

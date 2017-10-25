@@ -2,44 +2,16 @@
 
 namespace Sleefs\Models\Shiphero;
 
-Class PurchaseOrder {
+use Illuminate\Database\Eloquent\Model;
 
-	private $id,$status,$created_at,$vendor_name,$vendor_id,$payment_method,$tax,$discount,$subtotal,$shipping_price,$total_price,$po_date;
-	private $items = Array();
-	
-	public function __construct($id,$status,$created_at,$vendor_name,$vendor_id,$payment_method,$tax,$discount,$subtotal,$shipping_price,$total_price,$po_date){
-		$this->id = $id;
-		$this->status = $status;
-		$this->created_at = $created_at;
-		$this->vendor_name = $vendor_name;
-		$this->vendor_id = $vendor_id;
-		$this->payment_method = $payment_method;
-		$this->tax = $tax;
-		$this->discount = $discount;
-		$this->subtotal = $subtotal;
-		$this->shipping_price = $shipping_price;
-		$this->total_price = $total_price;
-		$this->po_date = $po_date;
+Class PurchaseOrder extends Model{
 
-	}
+	protected $table = 'sh_purchaseorders';
 
-	public function addItem (OrderItem $item){
+	public function items(){
 
-		array_push($this->items,$item);
-		return true;
+    	return $this->hasMany('Sleefs\Models\Shiphero\PurchaseOrderItem','idpo','id');
 
-	}
-
-	public function getItem($iditem){
-
-		foreach ($this->items as $key => $item) {
-			# code...
-			if ($item->id == $iditem){
-
-				return $item;
-
-			}
-		}
-	}
+    }
 
 }

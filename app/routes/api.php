@@ -36,8 +36,42 @@ Route::post('/sh', function (Request $request) {
 
 */
 Route::post('/sh','\Sleefs\Controllers\Shiphero\PurchaseOrderWebHookEndPointController');
-    
 
 
+//Route::post('/sp/products/add','\Sleefs\Controllers\Shopify\ProductAddController');
+Route::post('/sp/products/update','\Sleefs\Controllers\Shopify\ProductUpdateController');
+/*
 
+	Rutas para Test clase CURL con Phpunit
 
+*/
+
+Route::post('/tests/curl',function(Request $req){
+
+	$payload = json_decode(file_get_contents('php://input'));
+	return json_encode($payload);
+
+});
+
+Route::put('/tests/curl',function(Request $req){
+
+	$payload = json_decode(file_get_contents('php://input'));
+	return json_encode($payload);
+
+});
+
+Route::delete('/tests/curl',function(Request $req){
+
+	$payload = json_decode(file_get_contents('php://input'));
+	return json_encode($payload);
+
+});
+
+Route::get('/tests/curl/{secondchecker?}',function(Request $req,$secondchecker=null){
+
+	$checker = $req->checker;
+	if (isset ($secondchecker) && $secondchecker != null)
+		return "1. ".$checker." - ".$secondchecker;
+	else
+		return "2. ".$checker;
+});

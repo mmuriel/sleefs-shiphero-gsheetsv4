@@ -1,1 +1,25 @@
-Base structure to start an app based on Laravel 5.4 running on a docker container (https://hub.docker.com/r/maomuriel/laravel54-php7/)
+#Sleefs - Shopify - Shiphero - Google Spreadsheets V4 Integracion
+
+Para lanzar: 
+
+Base structure to start an app based on Laravel 5.4 running on a docker container (https://hub.docker.com/r/maomuriel/lara54-php70/)
+
+Comandos Docker para iniciar:
+
+1. Lanza el contenedor de la DB
+
+La imagen de este contenedor: https://hub.docker.com/_/mariadb/ (docker pull mariadb:10.2)
+
+docker run --name sleefs-mariadb -v [/my/own/datadir]:/var/lib/mysql --network sleefs -e MYSQL_ROOT_PASSWORD=[DB-PWD] -d mariadb:10.2
+
+2. Lanza el contendor de la App
+
+La imagen de este contenedor: https://hub.docker.com/_/mariadb/ (docker pull mariadb:10.2)
+
+docker run -d --name sleefs -v [/path/to/app]:/home/admin/app -p 9000:80 --network sleefs --link sleefs-mariadb:mysql  maomuriel/lara54-php70
+
+3. Lanza contenedor phpMyAdmin
+
+La imagen de este contenedor: https://hub.docker.com/r/phpmyadmin/phpmyadmin/
+
+docker run --name sleefs-myadmin -d --network sleefs -e PMA_HOST='sleefs-mariadb' -p 9090:80 phpmyadmin/phpmyadmin

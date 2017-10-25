@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         //
         Commands\ShipheroApiGetPOCommand::Class,
         Commands\GoogleSpreadSheetApiCommand::Class,
+        Commands\ShopifyGetProducts::Class,
     ];
 
     /**
