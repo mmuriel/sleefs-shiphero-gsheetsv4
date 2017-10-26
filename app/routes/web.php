@@ -34,5 +34,11 @@ Route::post('/tests/curl',function(Request $req){
 
 	$payload = json_decode(file_get_contents('php://input'));
 	return "Hola Mundo Post";
+});
+
+
+Route::get('/test/error',function(){
+
+	return view('error');
 
 });

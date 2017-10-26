@@ -51,34 +51,78 @@ class ShopifyGetProducts extends Command
 
         foreach ($data->products as $prd){
 
-            $product = new Product();
-            $product->idsp = $prd->id;
-            $product->title = $prd->title;
-            $product->vendor = $prd->vendor;
-            $product->product_type = $prd->product_type;
-            $product->handle = $prd->handle;
-            $product->idsp = $prd->id;
-            if ($opts['save'] == 'true'){
-                echo "Registrando producto: ".$prd->title." (". ($prd->product_type).")\n----\n";
-                $product->save();
-                foreach ($prd->variants as $var){
+            $product = Product::where("idsp","=",$prd->id)->first();
+
+            if ($product == null){
+
+                $product = new Product();
+                $product->idsp = $prd->id;
+                $product->title = $prd->title;
+                $product->vendor = $prd->vendor;
+                $product->product_type = $prd->product_type;
+                $product->handle = $prd->handle;
+                $product->idsp = $prd->id;
+                if ($opts['save'] == 'true'){
+                    $product->save();
+                }
+
+            }
+            else{
+
+                $product->title = $prd->title;
+                $product->vendor = $prd->vendor;
+                $product->product_type = $prd->product_type;
+                $product->handle = $prd->handle;
+                $product->idsp = $prd->id;
+                if ($opts['save'] == 'true')
+                    $product->save();
+
+            }
+
+            if ($opts['save'] == 'true')
+                echo "Procesando y registrando producto: ".$prd->title." (". ($prd->product_type).")\n----\n";
+            else
+                echo "Procesando (sin registro) producto: ".$prd->title." (". ($prd->product_type).")\n----\n";
+            
+            foreach ($prd->variants as $var){
+
+                if ($var->sku == '' || $var->sku == null ){
+
+                    echo "El SKU del producto: ".$prd->title." es nulo\n";
+                    continue;
+                }
+                $variant = Variant::where("idsp","=",$var->id)->first();
+                if ($variant == null){
+
                     $variant = new Variant();
                     if ($var->sku == '' or $var->sku == null){
-                        $var->sku = strtolower(preg_replace("/\ /","-",$var->sku));
+                        $var->sku = strtolower(preg_replace("/(\ {1,3})/","-",$var->sku));
                     }
                     $variant->idsp = $var->id;
                     $variant->sku = $var->sku;
                     $variant->title = $var->title;
                     $variant->idproduct = $product->id;
                     $variant->price = $var->price;
-                    $variant->save();
+                    if ($opts['save'] == 'true')
+                        $variant->save();
+                }
+                else{
+
+                    $variant->idsp = $var->id;
+                    $variant->sku = $var->sku;
+                    $variant->title = $var->title;
+                    $variant->idproduct = $product->id;
+                    $variant->price = $var->price;
+                    if ($opts['save'] == 'true')
+                        $variant->save();
+
                 }
 
+                echo "Var: ".$prd->title." (". ($prd->product_type).")\n----\n";
+                
             }
-            else{
-                var_dump($product);
-                echo "\n----------------------------\n";
-            }
+
+        
         }
         /*
         if ($opts['save'] == 'true'){
